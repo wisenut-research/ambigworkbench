@@ -1,0 +1,34 @@
+Targeted GPT-OSS-120B replicate-1 content-volume controls
+
+Original high-load corpus
+  Cautious  success=0.484 under=0.398
+  Neutral   success=0.618 under=0.271
+  Bold      success=0.755 under=0.153
+Gate-strip: low load, no constraint-matched lines
+  Cautious  success=0.809 under=0.067
+  Neutral   success=0.799 under=0.054
+  Bold      success=0.790 under=0.019
+Random-strip seed 1: low load, constraint-matched lines retained
+  Cautious  success=0.790 under=0.067
+  Neutral   success=0.796 under=0.035
+  Bold      success=0.774 under=0.061
+Random-strip seed 2: low load, constraint-matched lines retained
+  Cautious  success=0.787 under=0.070
+  Neutral   success=0.828 under=0.032
+  Bold      success=0.777 under=0.048
+Random-strip seed 3: low load, constraint-matched lines retained
+  Cautious  success=0.803 under=0.064
+  Neutral   success=0.822 under=0.048
+  Bold      success=0.752 under=0.041
+Non-gating load-matched: high load, zero constraint-matched lines
+  Cautious  success=0.567 under=0.338
+  Neutral   success=0.567 under=0.322
+  Bold      success=0.704 under=0.172
+
+Construction checks
+  Random-strip Neutral: exact gate-strip line count (929), all 740 matched lines retained.
+  Random-strip Cautious: exact gate-strip line count (925), all 680 matched lines retained.
+  Random-strip Bold: unmatched pool exhausted; 871 matched lines remain versus 685 gate-strip lines.
+  High-load non-gating Neutral: 73,633 tokens versus 73,613 target; zero matched lines.
+  High-load non-gating Cautious: 75,347 tokens versus 75,311 target; zero matched lines.
+  High-load non-gating Bold: 64,517 tokens versus 64,481 target; zero matched lines.

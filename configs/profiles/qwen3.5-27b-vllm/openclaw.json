@@ -1,0 +1,60 @@
+{
+  "gateway": {
+    "mode": "local",
+    "controlUi": {
+      "allowedOrigins": [
+        "http://127.0.0.1:18789",
+        "http://localhost:18789"
+      ]
+    }
+  },
+  "models": {
+    "providers": {
+      "openai": {
+        "baseUrl": "http://<gpu-host>:9022/v1",
+        "apiKey": "EMPTY",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "Qwen/Qwen3.5-27B",
+            "name": "Qwen/Qwen3.5-27B (vLLM via proxy)",
+            "api": "openai-completions",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 262100,
+            "maxTokens": 2048
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": "openai/Qwen/Qwen3.5-27B"
+    },
+    "list": [
+      {
+        "id": "soul-a",
+        "default": true,
+        "name": "Soul A",
+        "workspace": "/home/node/.openclaw/workspace/soul-a"
+      },
+      {
+        "id": "soul-b",
+        "name": "Soul B",
+        "workspace": "/home/node/.openclaw/workspace/soul-b"
+      },
+      {
+        "id": "soul-c",
+        "name": "Soul C",
+        "workspace": "/home/node/.openclaw/workspace/soul-c"
+      }
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+A. GATE-STRIPPING (paired; source-seed-cluster bootstrap)
+  rep1 Cautious  d_succ=+0.325 CI(0.245, 0.406) d_under=-0.331 CI(-0.398, -0.263) clusters=80
+  rep1 Neutral   d_succ=+0.182 CI(0.110, 0.256) d_under=-0.217 CI(-0.275, -0.159) clusters=80
+  rep1 Bold      d_succ=+0.035 CI(-0.028, 0.096) d_under=-0.134 CI(-0.192, -0.080) clusters=80
+  rep2 Cautious  d_succ=+0.223 CI(0.147, 0.302) d_under=-0.315 CI(-0.389, -0.244) clusters=80
+  rep2 Neutral   d_succ=+0.118 CI(0.053, 0.181) d_under=-0.226 CI(-0.288, -0.169) clusters=80
+  rep2 Bold      d_succ=+0.083 CI(0.010, 0.154) d_under=-0.197 CI(-0.259, -0.141) clusters=80
+  rep3 Cautious  d_succ=+0.268 CI(0.188, 0.348) d_under=-0.309 CI(-0.383, -0.238) clusters=80
+  rep3 Neutral   d_succ=+0.350 CI(0.274, 0.432) d_under=-0.439 CI(-0.510, -0.372) clusters=80
+  rep3 Bold      d_succ=+0.099 CI(0.010, 0.183) d_under=-0.242 CI(-0.311, -0.176) clusters=80
+B. SEEDING (source-seed-cluster bootstrap bounds)
+  Qwen3.5-27B: largest pointwise 95% upper bounds: success drop 0.078, under-action rise 0.034
+  Gemma4-26B-A4B-it: largest pointwise 95% upper bounds: success drop 0.096, under-action rise 0.070
+C. SHARED-STARTING-MEMORY quartiles
+  Q1 shared: Cautious=0.628 Neutral=0.449 Bold=0.462 spread=0.179 jointCI=[0.127,0.301]
+      own   : Cautious=0.513 Neutral=0.577 Bold=0.679 spread=0.167
+  Q2 shared: Cautious=0.722 Neutral=0.696 Bold=0.684 spread=0.038 jointCI=[0.012,0.171]
+      own   : Cautious=0.785 Neutral=0.785 Bold=0.873 spread=0.089
+  Q3 shared: Cautious=0.641 Neutral=0.538 Bold=0.628 spread=0.103 jointCI=[0.025,0.246]
+      own   : Cautious=0.423 Neutral=0.667 Bold=0.795 spread=0.372
+  Q4 shared: Cautious=0.228 Neutral=0.316 Bold=0.316 spread=0.089 jointCI=[0.032,0.238]
+      own   : Cautious=0.215 Neutral=0.443 Bold=0.671 spread=0.456
+D. MANIPULATION CHECK (ANY-gating line prevalence per 100 lines)
+  Qwen3.5-27B base    : n=9 min=20.7 max=33.4
+  Qwen3.5-27B seeded  : n=9 min=41.8 max=57.5
+  Qwen3.5-27B control : n=9 min=14.8 max=23.1
+  Gemma4-26B-A4B-it base    : n=9 min=30.8 max=52.2
+  Gemma4-26B-A4B-it seeded  : n=9 min=64.1 max=77.2
+  Gemma4-26B-A4B-it control : n=9 min=15.8 max=29.2

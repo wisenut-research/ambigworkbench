@@ -1,0 +1,22 @@
+- model alias: gemma4_26b_a4b_it
+- agent model: google/gemma-4-26B-A4B-it
+- OpenClaw provider: openai-completions
+- baseUrl: http://<gpu-host>:9022/v1
+- token metrics endpoint: http://<gpu-host>:9022/metrics
+- oracle model: gpt-4o-mini
+- tasks file: benchmark/tasks/ambig_queries.json
+- base per-rep runner: scripts/run_full_cumul.sh
+- portable multi-rep launcher: scripts/run_gemma4_reps.sh
+- docker image: vllm/vllm-openai:v0.19.0
+- GPUs: 2
+- GPU devices: 4,5
+- host port: 9022
+- container port: 9022
+- tensor parallel size: 2
+- max model len: 131072
+- dtype: auto
+- shm size: 32g
+- extra serve args: --gpu-memory-utilization 0.90 --no-enable-prefix-caching --async-scheduling --generation-config vllm --chat-template examples/tool_chat_template_gemma4.jinja
+- chat template: examples/tool_chat_template_gemma4.jinja (vLLM Gemma 4 recipe; required for tool-call handling)
+- pip install cmd: pip install --no-cache-dir --upgrade 'huggingface-hub==1.9.1' 'transformers==5.5.0'
+- orchestration note: each rep still used the same internal 5-run cumulative protocol; the parallel launcher was only used to coordinate rep-level execution

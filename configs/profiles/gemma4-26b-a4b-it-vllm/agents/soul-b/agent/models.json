@@ -1,0 +1,28 @@
+{
+  "providers": {
+    "openai": {
+      "baseUrl": "http://<gpu-host>:9022/v1",
+      "apiKey": "EMPTY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "google/gemma-4-26B-A4B-it",
+          "name": "google/gemma-4-26B-A4B-it (vLLM)",
+          "api": "openai-completions",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 131072,
+          "maxTokens": 2048
+        }
+      ]
+    }
+  }
+}

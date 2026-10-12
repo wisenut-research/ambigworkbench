@@ -1,0 +1,32 @@
+# Experiment-specific docker-compose override.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f experiment/docker-compose.experiment.yml up -d
+#
+# This override:
+#   - Mounts experiment/openclaw-config  as the openclaw config dir (contains openclaw.json + session data)
+#   - Mounts experiment/workspace        as the agent workspace dir  (contains soul-*/SOUL.md)
+#   - Passes OPENROUTER_API_KEY into both containers
+#
+# After `up`, run experiments with:
+#   docker exec -i openclaw-cli node dist/index.js agent \
+#     --message "task text" --agent soul-a
+
+services:
+  openclaw-gateway:
+    volumes:
+      - ${EXPERIMENT_DIR:-./experiment}/openclaw-config:/home/node/.openclaw
+      - ${EXPERIMENT_DIR:-./experiment}/workspace:/home/node/.openclaw/workspace
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+    # matplotlib is required by wb-analytics.py to generate real PNG plots
+    # (without it the script falls back to placeholder text files)
+    command: >
+      sh -c "pip3 install matplotlib --break-system-packages -q && exec node dist/index.js gateway --bind lan --port 18789"
+
+  openclaw-cli:
+    volumes:
+      - ${EXPERIMENT_DIR:-./experiment}/openclaw-config:/home/node/.openclaw
+      - ${EXPERIMENT_DIR:-./experiment}/workspace:/home/node/.openclaw/workspace
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}

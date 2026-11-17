@@ -5,7 +5,13 @@
 # matching the PROHIBITIVE / CONDITIONAL / ASK_FIRST regex families
 # (scripts/extract_gating_lines.py), keep the rest of the corpus unchanged,
 # install the stripped memory as the Run-5 starting state, and rerun Run 5
-# under the original conditions (--learning, souls interleaved).
+# with --learning --keep-memory.
+#
+# Execution schedule: the reported reruns (all three GPT-OSS-120B replicates)
+# ran the three conditions as concurrent processes against the same vLLM
+# server, unlike the interleaved single-process GPT-OSS baselines. PARALLEL=1
+# (default) reproduces that schedule; PARALLEL=0 runs the conditions
+# interleaved in one process, as in the baselines.
 #
 # Usage:
 #   export OPENAI_API_KEY=...
@@ -19,6 +25,8 @@ MODEL_LABEL="${BASELINE_REP%_rep*}"
 ORACLE_MODEL="${ORACLE_MODEL:-gpt-4o-mini}"
 VLLM_METRICS="${VLLM_METRICS:?set VLLM_METRICS, e.g. http://<gpu-host>:9022/metrics}"
 TASKS_FILE="${TASKS_FILE:-benchmark/tasks/ambig_queries.json}"
+PARALLEL="${PARALLEL:-1}"
+LABEL="${BASELINE_REP}_run5_stripped"
 MEMORY_LOG="results/${MODEL_LABEL}/${BASELINE_REP}/${BASELINE_REP}_memory_log"
 OUT="results/interventions/${BASELINE_REP}_run5_stripped"
 STRIP_DIR="${OUT}/_stripped_patterns"
@@ -72,12 +80,52 @@ for soul in ("soul-a","soul-b","soul-c"):
 PY
 
 echo "=== Step 3: rerun Run 5 with stripped memory ==="
-bash scripts/run_python.sh runner/run_experiment.py \
-    --souls soul-a,soul-b,soul-c \
-    --ambig-tasks "$TASKS_FILE" \
-    --experiment-name "${BASELINE_REP}_run5_stripped" \
-    --results-dir "$OUT" \
-    --oracle-model "$ORACLE_MODEL" \
-    --vllm-metrics-url "$VLLM_METRICS" \
-    --learning --keep-memory
+if [ "$PARALLEL" = "1" ]; then
+    echo "  mode: three conditions run concurrently (as in the reported reruns)"
+    RUN_TS=$(date +%Y%m%dT%H%M%S)
+    TMP_ROOT="${OUT}/_parallel_tmp"
+    mkdir -p "$TMP_ROOT"
+    pids=()
+    for soul in soul-a soul-b soul-c; do
+        bash scripts/run_python.sh runner/run_experiment.py \
+            --souls "$soul" \
+            --ambig-tasks "$TASKS_FILE" \
+            --experiment-name "_parallel_${LABEL}_${soul}" \
+            --results-dir "$TMP_ROOT" \
+            --oracle-model "$ORACLE_MODEL" \
+            --vllm-metrics-url "$VLLM_METRICS" \
+            --learning --keep-memory > "${TMP_ROOT}/${soul}.log" 2>&1 &
+        pids+=("$!")
+    done
+    failed=0
+    for pid in "${pids[@]}"; do
+        wait "$pid" || failed=$((failed + 1))
+    done
+    [ "$failed" -eq 0 ] || { echo "[ERROR] $failed condition runs failed; logs in $TMP_ROOT"; exit 1; }
+
+    # Merge the per-condition JSONLs into one run directory, as the analysis
+    # (scripts/paired_intervention_analysis.py) expects a single JSONL.
+    MERGED_DIR="${OUT}/${LABEL}_${RUN_TS}"
+    mkdir -p "$MERGED_DIR"
+    MERGED_JSONL="${MERGED_DIR}/${LABEL}_${RUN_TS}.jsonl"
+    : > "$MERGED_JSONL"
+    for soul in soul-a soul-b soul-c; do
+        soul_dir=$(find "$TMP_ROOT" -maxdepth 1 -type d -name "_parallel_${LABEL}_${soul}*" | head -1)
+        [ -n "$soul_dir" ] || { echo "[ERROR] no output for $soul"; exit 1; }
+        cat "$soul_dir"/*.jsonl >> "$MERGED_JSONL"
+    done
+    echo "  merged -> $MERGED_JSONL ($(wc -l < "$MERGED_JSONL") records)"
+    mv "$TMP_ROOT"/*.log "$MERGED_DIR"/
+    rm -rf "$TMP_ROOT"
+else
+    echo "  mode: three conditions interleaved in one process"
+    bash scripts/run_python.sh runner/run_experiment.py \
+        --souls soul-a,soul-b,soul-c \
+        --ambig-tasks "$TASKS_FILE" \
+        --experiment-name "$LABEL" \
+        --results-dir "$OUT" \
+        --oracle-model "$ORACLE_MODEL" \
+        --vllm-metrics-url "$VLLM_METRICS" \
+        --learning --keep-memory
+fi
 echo "=== done: $OUT ==="

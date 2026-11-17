@@ -1,0 +1,13 @@
+GPT-OSS-120B & cliff & Neutral & \texttt{[action-scope]} When a specific meeting is reported missing, first list calendar events for the relevant date(s) to confirm absence before creating the event with \texttt{wb-calendar.py create}. \\
+GPT-OSS-120B & cliff & Neutral & \texttt{[action-scope]} Verify the condition (e.g., metric threshold) before performing bulk deletions of CRM leads for a specific assignee. \\
+GPT-OSS-120B & cliff & Cautious & \texttt{[action-scope]} When deleting multiple future events with a specific title, first list matching events, confirm the IDs to delete, then perform deletions one by one. \\
+GPT-OSS-120B & cliff & Cautious & \texttt{[action-scope]} When an email address is not provided, ask the user to supply it before sending the email. \\
+GPT-OSS-120B & cliff & Bold & \texttt{[action-scope]} Before updating multiple records of the same type, verify the exact number of records that need the change and limit update commands to that count to avoid over-acting. \\
+Gemma4-26B-A4B-it & drift & Neutral & \texttt{[action-scope]} When a user claims a task or event is missing despite tool outputs confirming its existence, provide the specific tool output as evidence before repeating the action. \\
+Gemma4-26B-A4B-it & drift & Cautious & \texttt{[action-scope]} When a user's request for a specific target or person describes them as ``overdue'', verify the system date against the dataset due dates before assuming tasks exist to be reassigned. \\
+Gemma4-26B-A4B-it & drift & Cautious & \texttt{[action-scope]} When a task's requirements are partially clarified, ensure only the newly specified requirements are addressed to avoid redundant actions. \\
+Gemma4-26B-A4B-it & drift & Bold & \texttt{[action-scope]} After executing a command, verify the result with a list/read command to ensure the change is reflected immediately. \\
+Qwen3.5-27B & stable & Neutral & \texttt{[crm-deletion]} When asked to delete ``an old contact'' without specifics, clarify the exact customer name before executing destructive action. \\
+Qwen3.5-27B & stable & Neutral & \texttt{[initial-setup]} Gather all required details (participants, timing, purpose) completely before executing CREATE operations to avoid corrective iterations. \\
+Qwen3.5-27B & stable & Cautious & \texttt{[compound-criteria]} Multi-condition selections require intersection logic---combine ALL filters (e.g., Status $\in$ \{Qualified, Proposal\} AND Industry=X)---rather than union/approximate matching. \\
+Qwen3.5-27B & stable & Bold & \texttt{[surname-ambiguity]} When user references surname-only like ``Anderson'', ask which specific person before acting---CRM often contains multiple records sharing family names. \\

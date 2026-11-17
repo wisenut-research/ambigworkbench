@@ -5,8 +5,8 @@
 - token metrics endpoint: http://<gpu-host>:9022/metrics
 - oracle model: gpt-4o-mini
 - tasks file: benchmark/tasks/ambig_queries.json
-- base per-rep runner: scripts/run_full_cumul.sh
-- portable multi-rep launcher: scripts/run_gemma4_reps.sh
+- base per-rep runner: scripts/run_full_cumul_parallel.sh (three conditions as concurrent processes)
+- multi-rep launcher: scripts/run_gemma4_reps.sh (replicates run one after another)
 - docker image: vllm/vllm-openai:v0.19.0
 - GPUs: 2
 - GPU devices: 4,5
@@ -19,4 +19,4 @@
 - extra serve args: --gpu-memory-utilization 0.90 --no-enable-prefix-caching --async-scheduling --generation-config vllm --chat-template examples/tool_chat_template_gemma4.jinja
 - chat template: examples/tool_chat_template_gemma4.jinja (vLLM Gemma 4 recipe; required for tool-call handling)
 - pip install cmd: pip install --no-cache-dir --upgrade 'huggingface-hub==1.9.1' 'transformers==5.5.0'
-- orchestration note: each rep still used the same internal 5-run cumulative protocol; the parallel launcher was only used to coordinate rep-level execution
+- orchestration note: each rep used the same 5-run cumulative protocol as the other models, but within each run the three conditions (soul-a/b/c) executed as concurrent processes against the same vLLM server. The GPT-OSS-120B, Qwen3.5-27B, and GPT-OSS-20B baselines instead interleaved the conditions in one process (scripts/run_full_cumul.sh). The Gemma memory-injection runs (scripts/run_seeding_ablation.sh, scripts/run_seeding_control_ablation.sh) used the interleaved single-process schedule.

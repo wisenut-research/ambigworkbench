@@ -95,9 +95,9 @@ def aggregate_by_date(rows: list[dict], metric: str) -> list[tuple[str, float]]:
                     pass
             val = sum(vals) / len(vals) if vals else 0.0
         elif metric == "visits_social_media":
-            val = float(sum(1 for r in group if r.get("traffic_source", "").lower() in ("social_media", "social media")))
+            val = float(sum(1 for r in group if r.get("traffic_source", "").lower() == "social_media"))
         elif metric == "visits_search_engine":
-            val = float(sum(1 for r in group if r.get("traffic_source", "").lower() in ("search_engine", "search engine")))
+            val = float(sum(1 for r in group if r.get("traffic_source", "").lower() == "search_engine"))
         elif metric == "visits_referral":
             val = float(sum(1 for r in group if r.get("traffic_source", "").lower() == "referral"))
         elif metric == "visits_direct":

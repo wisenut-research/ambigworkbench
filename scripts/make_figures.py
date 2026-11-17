@@ -311,15 +311,23 @@ def fig4_cost_trajectories():
 def fig5_gate_stripping():
     print("Generating Figure 5: Gate-stripping...")
 
-    # 3-replicate aggregate (mean +/- SE across rep1/rep2/rep3).
-    data = {
-        "Bold":     {"orig_succ": 65.5, "strip_succ": 72.7, "orig_succ_se": 5.1, "strip_succ_se": 3.2,
-                     "orig_ua": 22.6, "strip_ua": 3.5,  "orig_ua_se": 3.8, "strip_ua_se": 0.8},
-        "Neutral":  {"orig_succ": 58.2, "strip_succ": 79.8, "orig_succ_se": 6.2, "strip_succ_se": 0.8,
-                     "orig_ua": 32.7, "strip_ua": 3.3,  "orig_ua_se": 7.1, "strip_ua_se": 1.1},
-        "Cautious": {"orig_succ": 52.3, "strip_succ": 79.5, "orig_succ_se": 2.1, "strip_succ_se": 0.9,
-                     "orig_ua": 37.6, "strip_ua": 5.7,  "orig_ua_se": 1.3, "strip_ua_se": 0.7},
-    }
+    # 3-replicate aggregate (mean +/- SE across rep1/rep2/rep3), computed from the
+    # runs by the same code that builds tab:ablation (scripts/tables/interventions.py).
+    # The annotated delta is the mean of per-replicate differences, as in the table.
+    import sys
+    sys.path.insert(0, str(SCRIPT_DIR / "tables"))
+    from common import Ctx
+    from interventions import ablation_summary
+    summary = ablation_summary(Ctx(roots=[ROOT]))
+    data = {}
+    for ident in IDENTITIES:
+        s_, u_ = summary[ident]["succ"], summary[ident]["under"]
+        data[ident] = {
+            "orig_succ": 100 * s_[0], "orig_succ_se": 100 * s_[1],
+            "strip_succ": 100 * s_[2], "strip_succ_se": 100 * s_[3], "succ_delta": 100 * s_[4],
+            "orig_ua": 100 * u_[0], "orig_ua_se": 100 * u_[1],
+            "strip_ua": 100 * u_[2], "strip_ua_se": 100 * u_[3], "ua_delta": 100 * u_[4],
+        }
 
     fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.8))
 
@@ -341,7 +349,7 @@ def fig5_gate_stripping():
 
     # Annotate Δ above the higher bar in each pair
     for i, ident in enumerate(IDENTITIES):
-        delta = data[ident]["strip_succ"] - data[ident]["orig_succ"]
+        delta = data[ident]["succ_delta"]
         higher = max(data[ident]["strip_succ"] + data[ident]["strip_succ_se"],
                      data[ident]["orig_succ"] + data[ident]["orig_succ_se"])
         ax.annotate(f"+{delta:.1f}pp",
@@ -370,7 +378,7 @@ def fig5_gate_stripping():
            color=ABLATION_COLOR_STRIP, edgecolor="black", linewidth=0.5,
            error_kw={"ecolor": "black", "capsize": 3, "elinewidth": 0.7})
     for i, ident in enumerate(IDENTITIES):
-        delta = data[ident]["strip_ua"] - data[ident]["orig_ua"]
+        delta = data[ident]["ua_delta"]
         higher = max(data[ident]["strip_ua"] + data[ident]["strip_ua_se"],
                      data[ident]["orig_ua"] + data[ident]["orig_ua_se"])
         ax.annotate(f"{delta:+.1f}pp",

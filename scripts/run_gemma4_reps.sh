@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# Runs Gemma4-26B-A4B-it replicates 1-3 one after another. Within each run the
+# three conditions (soul-a/b/c) execute as concurrent processes via
+# run_full_cumul_parallel.sh, as in the reported Gemma baselines. The other
+# model families used the single-process runner run_full_cumul.sh.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -29,12 +33,12 @@ for rep in 1 2 3; do
     exit 1
   fi
 
-  echo "[$(date '+%F %T %Z')] starting ${rep_name}"
+  echo "[$(date '+%F %T %Z')] starting ${rep_name} (concurrent conditions)"
   export RUN_PREFIX="${rep_name}"
   export RESULTS_DIR="${rep_dir}"
   export VLLM_METRICS="${METRICS_URL}"
 
-  bash scripts/run_full_cumul.sh
+  bash scripts/run_full_cumul_parallel.sh
 
   echo "[$(date '+%F %T %Z')] finished ${rep_name}"
 done

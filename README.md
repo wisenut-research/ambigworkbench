@@ -26,11 +26,11 @@ checksum for every file; verify them from the repository root with
 | `scripts/run_full_cumul.sh` | §3.3 | five cumulative runs for one replicate, three conditions interleaved in one process (GPT-OSS-120B, Qwen3.5-27B, GPT-OSS-20B) |
 | `scripts/run_full_cumul_parallel.sh`, `scripts/run_gemma4_reps.sh` | §3.4 | the same protocol with the three conditions as concurrent processes (Gemma4-26B-A4B-it) |
 | `scripts/run_gate_strip_ablation.sh` | §5.3.4 | matched-line removal intervention |
-| `scripts/build_random_strip_size_matched.py`, `scripts/build_nongating_loadmatched.py` | §5.3.5 | corpora for the matched-line-retaining low-load and zero-match high-load controls |
-| `scripts/run_content_volume_control.sh` | §5.3.5 | targeted GPT-OSS content–volume controls |
-| `scripts/content_volume_control_analysis.py` | §5.3.5 | compact summary of the content–volume controls |
+| `scripts/build_random_strip_size_matched.py`, `scripts/build_nongating_loadmatched.py` | §5.3.5 | corpora for the random unmatched-line removal control and the high-load control with no matched lines |
+| `scripts/run_content_volume_control.sh` | §5.3.5 | targeted GPT-OSS content–load controls |
+| `scripts/content_volume_control_analysis.py` | §5.3.5 | compact summary of the content–load controls |
 | `scripts/run_seeding_ablation.sh` | §5.3.6 | cross-model matched-line memory-injection intervention |
-| `scripts/run_seeding_control_ablation.sh` | §5.3.6 | token-matched unmatched-line control |
+| `scripts/run_seeding_control_ablation.sh` | §5.3.6 | equal-load control with unmatched lines |
 | `scripts/run_sharedmem_ablation.sh` | §5.3.3 | shared-starting-memory intervention |
 | `scripts/paired_intervention_analysis.py` | §§5.3.3--5.3.6 | paired analyses with bootstrap intervals clustered by the 80 source WorkBench tasks, task-order quartiles, and manipulation checks |
 | `analysis/`, `scripts/make_figures.py` | §5 and appendices | main aggregation, behavior, performance, cost, and code for Figures 2--5 |
@@ -81,14 +81,14 @@ interleave the three conditions in one process (`run_full_cumul.sh`). The
 Gemma4-26B-A4B-it baselines run them as three concurrent processes
 (`run_full_cumul_parallel.sh`, launched by `run_gemma4_reps.sh`). Among the
 interventions, the GPT-OSS Run-5 reruns (matched-line removal, shared memory,
-and both content-volume controls) are concurrent, and the Qwen and Gemma
+and both content–load controls) are concurrent, and the Qwen and Gemma
 memory-injection runs are interleaved. The scripts below default to the
 schedule used for the reported runs.
 
 The full raw JSONL trajectories are not included in this repository
 because they contain verbose model transcripts and total several gigabytes.
 The runner regenerates them. The exact aggregate outputs used for the paired,
-content-volume, and cost checks are included under `derived_results/`.
+content–load, and cost checks are included under `derived_results/`.
 
 To run the paired analysis on regenerated results:
 
@@ -116,7 +116,7 @@ sample-lines table, were chosen by hand; the scripts list them explicitly and
 verify the lines' provenance. A full run takes about a minute and under 1 GB of
 memory. The outputs for the reported runs are in `derived_results/tables/`.
 
-The targeted content-volume controls are prepared and run with:
+The targeted content–load controls are prepared and run with:
 
 ```bash
 python3 scripts/build_random_strip_size_matched.py \
